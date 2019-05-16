@@ -80,11 +80,9 @@ public class TrackingCamera implements MouseListener, MouseMotionListener, Mouse
         gl.glLoadIdentity();
         double r = distanceToOrigin * Math.cos(Math.toRadians(angleY));
         double camZ = r * Math.cos(Math.toRadians(angleX));
-        double camX = r * Math.sin(Math.toRadians(angleX));
-        double camY = distanceToOrigin * Math.sin(Math.toRadians(angleY));
         glu.gluLookAt(
-            camX, camY, camZ,                // eye
-            lookAt[0], lookAt[1], lookAt[2], // center
+            -3, 1, 0,                // eye
+            Drone.x, Drone.y, Drone.z, // center
             0, 1, 0);                        // up
     }
 

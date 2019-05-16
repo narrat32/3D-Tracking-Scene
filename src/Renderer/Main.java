@@ -6,7 +6,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
+import java.io.File;
+import java.io.IOException;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -18,8 +19,10 @@ import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.GLUquadric;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.gl2.GLUT;
+import com.jogamp.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.TextureIO;
 
-public class Main implements GLEventListener{
+public class Main implements GLEventListener, KeyListener{
 
 	private static GLCanvas canvas;
 	
@@ -31,6 +34,9 @@ public class Main implements GLEventListener{
 	private TrackingCamera camera = new TrackingCamera(canvas);
 
 	private Ground ground;
+	private Drone drone;
+	
+	private Texture[] textures;
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
@@ -45,10 +51,15 @@ public class Main implements GLEventListener{
 		
 		camera.draw(gl);
 		
-		ground.draw(gl, glut);
-		/*gl.glDisable(GL2.GL_LIGHT0);
+		drone.draw(gl, glu, quadric);
+		
+		gl.glDisable(GL2.GL_LIGHT0);
 		gl.glDisable(GL2.GL_LIGHT1);
 		
+		gl.glEnable(GL2.GL_BLEND);
+		gl.glDisable(GL2.GL_DEPTH_TEST);
+		
+		ground.draw(gl, glut, textures);
 		
 		
 		//Re-enabling depth testing so that objects appear as they
@@ -57,7 +68,7 @@ public class Main implements GLEventListener{
 		gl.glDisable(GL2.GL_BLEND);
 		
 		gl.glEnable(GL2.GL_LIGHT0);
-		gl.glEnable(GL2.GL_LIGHT1);*/
+		gl.glEnable(GL2.GL_LIGHT1);
 		
 		gl.glFlush();
 	}
@@ -83,12 +94,22 @@ public class Main implements GLEventListener{
 		//use the lights
 		this.lights(gl);
 		
-		//Creates a quadratic
+		textures = new Texture[2];
+		
+		try {
+			textures[0] = TextureIO.newTexture(new File("./textures/TexturesCom_Grass0130_1_seamless_s.jpg"), true);
+			//textures[1] = TextureIO.newTexture(new File("./textures/blue-water-clear-water-liquid-933701.jpg"), true);
+		}
+		catch(IOException e) {
+			throw new RuntimeException(e);
+		}
+		
 		quadric = glu.gluNewQuadric();
 		
 		//Passes in necessary variables into the objects
 		glut = new GLUT();
 		ground = new Ground();
+		drone = new Drone();
 	}
 
 	private void lights(GL2 gl) {
@@ -135,6 +156,7 @@ public class Main implements GLEventListener{
 		Main background = new Main();
 		
 		canvas.addGLEventListener(background);
+		canvas.addKeyListener(background);
 	
 		frame.add(canvas);
 		frame.setSize(650, 600);
@@ -156,5 +178,43 @@ public class Main implements GLEventListener{
 		canvas.requestFocusInWindow();
 		
 		animator.start();
+	}
+
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+	int buttonPressed = e.getKeyCode();
+		
+		if(buttonPressed == KeyEvent.VK_W) {
+			drone.x += 0.01;
+		}
+		if(buttonPressed == KeyEvent.VK_S) {
+			drone.x -= 0.01;
+		}
+		if(buttonPressed == KeyEvent.VK_PAGE_UP) {
+			drone.y += 0.01;
+		}
+		if(buttonPressed == KeyEvent.VK_PAGE_DOWN) {
+			drone.y -= 0.01;
+		}
+		if(buttonPressed == KeyEvent.VK_D) {
+			drone.z += 0.01;
+		}
+		if(buttonPressed == KeyEvent.VK_A) {
+			drone.z -= 0.01;
+		}
+	}
+
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+	
+	}
+
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }
