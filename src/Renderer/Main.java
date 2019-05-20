@@ -37,6 +37,7 @@ public class Main implements GLEventListener, KeyListener{
 	private Drone drone;
 	
 	private Texture[] textures;
+	private float fogColour[] = {1, 1, 1, 0.1f};
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
@@ -51,21 +52,28 @@ public class Main implements GLEventListener, KeyListener{
 		
 		camera.draw(gl);
 		
-		drone.draw(gl, glu, quadric);
+		gl.glFogfv(GL2.GL_FOG_COLOR, fogColour, 0);
+		gl.glFogf(GL2.GL_FOG_DENSITY, 0.08f);
 		
+		
+		
+		
+		
+		ground.draw(gl, glut, textures);
+		
+		drone.draw(gl, glu, glut, quadric);
+		
+		gl.glEnable(GL2.GL_FOG);
 		gl.glDisable(GL2.GL_LIGHT0);
 		gl.glDisable(GL2.GL_LIGHT1);
 		
-		gl.glEnable(GL2.GL_BLEND);
-		gl.glDisable(GL2.GL_DEPTH_TEST);
 		
-		ground.draw(gl, glut, textures);
+		
 		
 		
 		//Re-enabling depth testing so that objects appear as they
 		//should in the scene
 		gl.glEnable(GL2.GL_DEPTH_TEST);
-		gl.glDisable(GL2.GL_BLEND);
 		
 		gl.glEnable(GL2.GL_LIGHT0);
 		gl.glEnable(GL2.GL_LIGHT1);
@@ -195,7 +203,14 @@ public class Main implements GLEventListener, KeyListener{
 			drone.y += 0.01;
 		}
 		if(buttonPressed == KeyEvent.VK_PAGE_DOWN) {
-			drone.y -= 0.01;
+			if(drone.y < -0.5)
+			{
+				System.out.println("The drone cannot go any lower!");
+			}
+			else
+			{	
+				drone.y -= 0.01;
+			}
 		}
 		if(buttonPressed == KeyEvent.VK_D) {
 			drone.z += 0.01;

@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.GLUquadric;
+import com.jogamp.opengl.util.gl2.GLUT;
 
 public abstract class DroneComponent {
 	
@@ -22,15 +23,15 @@ public abstract class DroneComponent {
 		this.height = height;
 	}
 	
-	public void draw(GL2 gl, GLU glu, GLUquadric quadric) {
+	public void draw(GL2 gl, GLU glu, GLUT glut, GLUquadric quadric) {
 		gl.glPushMatrix();
 		
 		transformNode(gl);
 		
-		drawNode(gl, glu, quadric);
+		drawNode(gl, glu, glut, quadric);
 		
 		for(DroneComponent child : children) {
-			child.draw(gl, glu, quadric);
+			child.draw(gl, glu, glut, quadric);
 		}
 		gl.glPopMatrix();
 	}
@@ -53,5 +54,5 @@ public abstract class DroneComponent {
 		this.eqn = eqn;
 	}
 	
-	public abstract void drawNode(GL2 gl, GLU glu, GLUquadric quadric);
+	public abstract void drawNode(GL2 gl, GLU glu, GLUT glut,GLUquadric quadric);
 }
